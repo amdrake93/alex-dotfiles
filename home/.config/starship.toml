@@ -27,7 +27,7 @@ truncation_length = 3
 truncation_symbol = "…/"
 truncate_to_repo = true
 read_only = " "
-style = "bold cyan"
+style = "bold blue"
 
 [git_branch]
 symbol = "\ue0a0 "
@@ -57,20 +57,27 @@ style = "bright-yellow"
 disabled = false
 time_format = "%-I:%M:%S %p"
 format = '[$time]($style)'
-style = "bright-black"
+style = "bold #7b98b2"
 
 [terraform]
 format = '[$symbol$workspace]($style) '
 symbol = "tf "
-style = "bold 105"
+style = "bold #7fdbca"
 detect_files = ["*.tf", "*.tfplan", "*.tfstate", ".terraform-version", ".tflint.hcl"]
 
 [java]
 format = '[$symbol($version)]($style) '
+style = "bold red"
+
 [python]
 format = '[$symbol($version)]($style) '
+style = "bold yellow"
+
 [nodejs]
 format = '[$symbol($version)]($style) '
 symbol = "⬢ "
+style = "bold green"
+
 [golang]
 format = '[$symbol($version)]($style) '
+style = "bold cyan"
