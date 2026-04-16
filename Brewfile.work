@@ -1,0 +1,8 @@
+# Cloud Campaign — JVM / Java toolchain
+brew "maven"
+brew "jdtls"
+cask "zulu-jdk8"
+cask "zulu-jdk17"
+
+# AWS local dev
+brew "localstack"
