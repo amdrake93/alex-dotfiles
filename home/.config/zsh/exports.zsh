@@ -33,6 +33,12 @@ if [[ -d $HOME/.pyenv ]]; then
   eval "$(pyenv init -)"
 fi
 
+# Jenv (per-project Java versions)
+if type jenv &>/dev/null; then
+  export PATH="$HOME/.jenv/bin:$PATH"
+  eval "$(jenv init -)"
+fi
+
 # Bun
 if [ -s "$HOME/.bun/_bun" ]; then
   source "$HOME/.bun/_bun"

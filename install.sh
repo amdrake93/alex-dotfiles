@@ -70,6 +70,19 @@ else
   SKIP_GHOSTTY=false
 fi
 
+# Xcode Command Line Tools (required by Homebrew for compiling packages)
+if ! xcode-select -p &>/dev/null; then
+  info "Installing Xcode Command Line Tools..."
+  xcode-select --install
+  echo "  Waiting for installation to complete..."
+  until xcode-select -p &>/dev/null; do
+    sleep 5
+  done
+  echo "  Xcode CLT installed."
+else
+  echo "  Xcode CLT found at $(xcode-select -p)"
+fi
+
 # --- Step 2: Homebrew --------------------------------------------------------
 
 info "Ensuring Homebrew..."
@@ -171,8 +184,8 @@ if [[ "$SKIP_GHOSTTY" == true ]]; then
   echo "  3. After upgrading macOS, re-run install.sh to install Ghostty."
 fi
 echo ""
-echo "  Work-specific tools (Java/Maven/localstack):"
-echo "    brew bundle install --file=$REPO_DIR/Brewfile.work"
+echo "  Work-specific setup (Java/jenv/Maven/localstack, plus per-repo .java-version):"
+echo "    $REPO_DIR/scripts/setup-work.sh"
 echo ""
 if [[ "$BACKED_UP" == true ]]; then
   echo "  Backed-up files: $BACKUP_DIR"

@@ -1,6 +1,7 @@
 # Cloud Campaign — JVM / Java toolchain
 brew "maven"
 brew "jdtls"
+brew "jenv"
 cask "zulu-jdk8"
 cask "zulu-jdk17"
 
