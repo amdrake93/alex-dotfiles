@@ -1,0 +1,11 @@
+#!/usr/bin/env zsh
+
+# Wrapper that runs Claude Code with Node 22 via nvm.
+# Claude requires newer Node than the project default (v16).
+# The nvm use runs in this script's subshell — parent shell is unaffected.
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+nvm use 22 > /dev/null 2>&1
+exec claude "$@"
