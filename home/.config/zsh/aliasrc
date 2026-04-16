@@ -1,0 +1,67 @@
+# Color output
+alias grep="grep --color=auto"
+
+# Shortcuts
+alias untar="tar -xvf"
+alias vim="nvim"
+alias v="nvim"
+alias cp="cp -iv"
+alias ..="cd .."
+alias mv="mv -iv"
+alias reload-profile="source ~/.config/zsh/.zshrc"
+alias weather="curl wttr.in"
+
+# Modern Unix drop-in replacements
+if type eza &>/dev/null; then
+  alias ls='eza --icons --git --group-directories-first'
+  alias ll='eza -lh --icons --git --group-directories-first'
+  alias la='eza -lah --icons --git --group-directories-first'
+fi
+
+alias cat='bat --paging=never'
+alias cd='z'
+
+# FZF integrations
+if type fzf &>/dev/null; then
+  alias ,ff='v $(fzf)'
+fi
+
+# Search for scripts/dotfiles and open in editor
+sc() {
+  find ~/ ~/.config ~/.local/bin -type f \
+    | fzf --preview 'bat --color=always --line-range :50 {}' | xargs -r "$EDITOR"
+}
+
+# cd into any directory via fzf
+fcd() {
+  local dir
+  dir=$(find "${1:-.}" -type d 2>/dev/null | fzf +m) && cd "$dir"
+}
+
+# cd into directory of selected file
+cdf() {
+  local file dir
+  file=$(find "${1:-.}" -type f | fzf +m -q "$1") && dir=$(dirname "$file") && cd "$dir"
+}
+
+# tmux new session named after current dir
+if type tmux &>/dev/null; then
+  alias tn='tmux new -s "$(pwd | sed "s/.*\///g")"'
+fi
+
+# JQ + FZF combo
+if type jq &>/dev/null; then
+  ,jq() {
+    echo '' | fzf --print-query --preview "cat $1 | jq {q}"
+  }
+  to_csv() {
+    jq -r '(.[0] | keys_unsorted) as $keys | $keys, map([.[ $keys[] ]])[] | @csv'
+  }
+fi
+
+# Print terminal colors
+print_colours() {
+  for i in {0..255}; do
+    printf "\x1b[38;5;${i}mcolour${i}\x1b[0m\n"
+  done
+}
