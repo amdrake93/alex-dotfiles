@@ -1,0 +1,40 @@
+[user]
+  name = Alex Drake
+  email = adrake@cloudcampaign.com
+
+[pull]
+  rebase = false
+
+[core]
+  pager = delta
+  excludesfile = ~/.config/git/ignore
+
+[interactive]
+  diffFilter = delta --color-only
+
+[delta]
+  navigate = true
+  light = false
+
+[merge]
+  conflictstyle = diff3
+
+[diff]
+  colorMoved = default
+
+[push]
+  default = current
+
+[fetch]
+  prune = true
+
+[alias]
+  s = status --short --branch
+  d = diff
+  ds = diff --staged
+  l = log --oneline --decorate -20
+  ll = log --oneline --decorate --graph --all
+  b = branch
+  pf = push --force-with-lease
+  unstage = reset HEAD --
+  undo = reset --soft HEAD~1
