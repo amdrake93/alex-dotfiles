@@ -1,5 +1,3 @@
-tap "homebrew/cask"
-tap "homebrew/cask-fonts"
 tap "hashicorp/tap"
 
 # Core CLI
