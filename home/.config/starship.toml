@@ -1,0 +1,76 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+add_newline = false
+command_timeout = 3000
+
+format = """
+$directory\
+$git_branch\
+$git_status\
+$line_break\
+$character"""
+
+right_format = """
+$terraform\
+$java\
+$python\
+$nodejs\
+$golang\
+$cmd_duration\
+$time"""
+
+[character]
+success_symbol = "[❯](bright-green)"
+error_symbol = "[❯](bright-red)"
+
+[directory]
+truncation_length = 3
+truncation_symbol = "…/"
+truncate_to_repo = true
+read_only = " "
+style = "bold cyan"
+
+[git_branch]
+symbol = "\ue0a0 "
+format = "[$symbol$branch]($style) "
+style = "bold purple"
+
+[git_status]
+format = '([\[$all_status$behind$diverged\]]($style) )'
+style = "bright-white"
+ahead = ''
+behind = '⇣${count}'
+diverged = '⇣${behind_count}'
+modified = '!${count}'
+staged = '+${count}'
+untracked = '?${count}'
+stashed = '*${count}'
+renamed = '»${count}'
+deleted = '✘${count}'
+conflicted = '=${count}'
+
+[cmd_duration]
+min_time = 2000
+format = '[ $duration]($style) '
+style = "bright-yellow"
+
+[time]
+disabled = false
+time_format = "%-I:%M:%S %p"
+format = '[$time]($style)'
+style = "bright-black"
+
+[terraform]
+format = '[$symbol$workspace]($style) '
+symbol = "tf "
+style = "bold 105"
+detect_files = ["*.tf", "*.tfplan", "*.tfstate", ".terraform-version", ".tflint.hcl"]
+
+[java]
+format = '[$symbol($version)]($style) '
+[python]
+format = '[$symbol($version)]($style) '
+[nodejs]
+format = '[$symbol($version)]($style) '
+symbol = "⬢ "
+[golang]
+format = '[$symbol($version)]($style) '
