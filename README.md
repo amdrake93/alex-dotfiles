@@ -18,13 +18,17 @@ cd ~/repos/alex-dotfiles
 - **Prompt:** starship with git status, language versions (Java/Python/Node/Go), terraform workspace, 12h clock
 - **Fonts:** FiraCode Nerd Font
 
-## Work-specific tools
+## Work-specific setup
 
-Java, Maven, JDK8/17, localstack — not installed by default:
+Java toolchain, localstack, and per-project Java version management — run after `install.sh`:
 
 ```bash
-brew bundle install --file=~/repos/alex-dotfiles/Brewfile.work
+./scripts/setup-work.sh
 ```
+
+This installs `Brewfile.work` (JDK 8/17, maven, jenv, localstack), enables jenv's export plugin (auto-exports `JAVA_HOME`), registers installed JDKs, sets `jenv global 1.8`, and auto-generates `.java-version` files for every `~/repos/cloud-campaign-*` clone (detected from `pom.xml`, `Dockerfile`, or `bitbucket-pipelines.yml`). Idempotent — re-run anytime.
+
+`.java-version` files are user-only (gitignored globally via `core.excludesfile`) so they never get committed to upstream work repos.
 
 ## Comma-prefix git system
 
@@ -50,3 +54,13 @@ Brewfile       cross-machine standard packages
 Brewfile.work  job-specific packages
 install.sh     bootstrap script (idempotent)
 ```
+
+## Design notes
+
+A few non-obvious choices worth keeping in mind:
+
+- **Night Owl theme (Ghostty) and Night Owl-aligned starship colors.** Chosen for red/green colorblind friendliness — most themes make diff coloring hard to distinguish.
+- **Per-language prompt accents match each ecosystem's branding.** Java=red (coral), Python=yellow, Node=green, Go=cyan.
+- **jenv for Java version switching.** Lighter than asdf/sdkman for a single-language use case. Shims `java`/`javac`/`mvn`; exports `JAVA_HOME` per-repo via `.java-version`.
+- **`.java-version` is user-local, never committed.** Global git `excludesfile` (`~/.config/git/ignore`) keeps it out of upstream repos.
+- **No tmux.** Removed — interfered with system clipboard.
