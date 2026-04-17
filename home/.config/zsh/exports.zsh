@@ -34,8 +34,9 @@ if [[ -d $HOME/.pyenv ]]; then
 fi
 
 # Jenv (per-project Java versions)
+# PATH setup for shims lives in .zshenv so subagent/non-interactive shells
+# inherit it too. This block handles interactive-shell features only.
 if type jenv &>/dev/null; then
-  export PATH="$HOME/.jenv/bin:$PATH"
   eval "$(jenv init -)"
 fi
 
