@@ -185,6 +185,37 @@ Examples:
   ,cp main abc1234 def5678                       # cherry-pick multiple commits
 
 Tip: 'which ,sc' (or any function name) shows the actual implementation.
+Tip: Tab-completes branches on ,co ,d ,ds ,l ,ll (any position); ,sc (arg 2); ,cp (arg 1).
 EOF
 }
 alias ,help=',h'
+
+# --- Completions -------------------------------------------------------------
+
+# Shared branch completer: local + origin/* branches, deduped, recent first.
+# Strips 'origin/' prefix and 'origin/HEAD' symref so each branch appears once.
+_comma_branches() {
+  local -a branches
+  branches=(${(f)"$(git for-each-ref \
+    --format='%(refname:short)' \
+    --sort=-committerdate \
+    refs/heads refs/remotes/origin 2>/dev/null \
+    | sed 's|^origin/||' \
+    | awk '!/^HEAD$/ && !seen[$0]++')"})
+  _describe 'branch' branches
+}
+
+# Commands that take a branch at any positional arg.
+compdef _comma_branches ,co ,d ,ds ,l ,ll
+
+# ,sc <new-name> [base] — only complete branches for arg 2.
+_comma_sc() {
+  _arguments '1:new branch name:' '2:base branch:_comma_branches'
+}
+compdef _comma_sc ,sc
+
+# ,cp <remote-branch> <hash>... — only complete branches for arg 1.
+_comma_cp() {
+  _arguments '1:remote branch:_comma_branches' '*:commit hash:'
+}
+compdef _comma_cp ,cp
