@@ -22,10 +22,10 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 -- vim-markdown plugin globals (must be set before plugin loads)
-vim.g.markdown_fenced_languages = {
+vim.g.vim_markdown_fenced_languages = {
   "java", "groovy", "sql", "json", "yaml",
   "javascript", "typescript", "python",
-  "bash=sh", "sh", "html", "xml", "ruby",
+  "bash=sh", "sh", "html", "xml", "ruby", "lua",
 }
 vim.g.vim_markdown_folding_disabled = 1
 vim.g.vim_markdown_conceal = 0
