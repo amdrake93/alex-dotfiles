@@ -3,9 +3,10 @@
 -- IntelliJ is the primary editor for engineering work. Nvim is used for
 -- reading markdown spec/plan files in the terminal, scratch edits, git
 -- commit messages, and other on-the-fly file work. Kept intentionally
--- light: a colorscheme matching the Ghostty Night Owl theme and a
--- markdown filetype plugin. NOT an IDE replacement — no LSP, no
--- completion, no diagnostics.
+-- light: a Night Owl colorscheme matching the Ghostty terminal, plus
+-- nvim-treesitter for proper syntax highlighting (including in fenced
+-- markdown code blocks). NOT an IDE replacement — no LSP, no completion,
+-- no diagnostics.
 
 -- Bootstrap lazy.nvim (auto-clones on first run)
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -21,19 +22,6 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
--- vim-markdown plugin globals (must be set before plugin loads).
--- Note: g:vim_markdown_fenced_languages is vim-markdown's own variable,
--- distinct from vim's built-in g:markdown_fenced_languages (which the plugin's
--- syntax file overrides).
-vim.g.vim_markdown_fenced_languages = {
-  "java", "groovy", "sql", "json", "yaml",
-  "javascript", "typescript", "python",
-  "bash=sh", "sh", "html", "xml", "ruby", "lua",
-}
-vim.g.vim_markdown_folding_disabled = 1
-vim.g.vim_markdown_conceal = 0
-vim.g.vim_markdown_conceal_code_blocks = 0
-
 -- Plugins
 require("lazy").setup({
   {
@@ -44,27 +32,38 @@ require("lazy").setup({
       vim.cmd.colorscheme("night-owl")
     end,
   },
-  -- vim-markdown gives us regex-based syntax injection inside fenced code
-  -- blocks (java, sql, lua, etc. all highlighted via the languages listed in
-  -- g:vim_markdown_fenced_languages above). The MarkdownStopTS autocmd below
-  -- disables nvim's bundled Treesitter highlighting for markdown buffers,
-  -- because TS would otherwise paint @markup.raw.block over everything as a
-  -- single color and drown out vim-markdown's per-language injection.
+  -- nvim-treesitter (main branch — the 1.0 rewrite for nvim 0.10+).
+  -- Provides full per-token syntax highlighting (strings, identifiers,
+  -- function names, types, comments) instead of just regex keyword matching.
+  -- Markdown injections work natively: a ```java fence inside a .md file gets
+  -- the Java parser applied to its contents. Requires `tree-sitter` CLI on
+  -- PATH (provided by the tree-sitter-cli brew formula in Brewfile).
   {
-    "preservim/vim-markdown",
-    ft = { "markdown" },
-    dependencies = { "godlygeek/tabular" },
-  },
-})
+    "nvim-treesitter/nvim-treesitter",
+    branch = "main",
+    lazy = false,
+    build = ":TSUpdate",
+    config = function()
+      local langs = {
+        "markdown", "markdown_inline",
+        "java", "groovy", "sql", "json", "yaml",
+        "javascript", "typescript", "python",
+        "bash", "html", "xml", "ruby", "lua",
+      }
+      require("nvim-treesitter").install(langs)
 
--- Stop Treesitter highlighting on markdown buffers — vim-markdown owns markdown
--- rendering, including fenced-code injection. Without this, TS's
--- @markup.raw.block capture overlays everything in one color.
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "markdown",
-  callback = function()
-    pcall(vim.treesitter.stop)
-  end,
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = {
+          "markdown", "java", "groovy", "sql", "json", "yaml",
+          "javascript", "typescript", "python", "bash", "sh",
+          "html", "xml", "ruby", "lua",
+        },
+        callback = function()
+          pcall(vim.treesitter.start)
+        end,
+      })
+    end,
+  },
 })
 
 -- Line numbers

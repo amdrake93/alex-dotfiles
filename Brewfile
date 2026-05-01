@@ -25,6 +25,7 @@ brew "antidote"
 brew "neovim"
 brew "lua-language-server"
 brew "luacheck"
+brew "tree-sitter-cli"  # nvim-treesitter parser compilation
 
 # Cloud / containers
 brew "awscli"
