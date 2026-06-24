@@ -18,6 +18,10 @@ brew "git-delta"
 brew "lazygit"
 brew "fzf"
 
+# Markdown viewing (md / mdw functions in aliasrc)
+brew "glow"   # terminal markdown renderer
+brew "entr"   # file watcher — powers the mdw live-reload preview
+
 # Shell
 brew "antidote"
 

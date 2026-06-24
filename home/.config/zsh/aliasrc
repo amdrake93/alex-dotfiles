@@ -20,6 +20,15 @@ fi
 alias cat='bat --paging=never'
 alias cd='z'
 
+# Markdown rendering (glow). `md` renders once; `mdw` live-reloads on save.
+if type glow &>/dev/null; then
+  alias md='glow -p'
+  if type entr &>/dev/null; then
+    # entr substitutes the watched filename for /_
+    mdw() { echo "$1" | entr -c glow /_ }
+  fi
+fi
+
 # FZF integrations
 if type fzf &>/dev/null; then
   alias ,ff='v $(fzf)'
