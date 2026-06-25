@@ -16,6 +16,15 @@ info()  { printf "\033[1;34m==> %s\033[0m\n" "$1"; }
 warn()  { printf "\033[1;33m==> WARNING: %s\033[0m\n" "$1"; }
 error() { printf "\033[1;31m==> ERROR: %s\033[0m\n" "$1"; }
 
+# Ask before a curl-based one-off install. Defaults to NO — including
+# non-interactive / no-TTY runs (so unattended runs skip these installs).
+confirm() {
+  local reply
+  [[ -t 0 ]] || return 1
+  read -rp "$(printf '\033[1;33m==> %s [y/N] \033[0m' "$1")" reply || return 1
+  [[ "$reply" == [Yy]* ]]
+}
+
 # --- Helpers -----------------------------------------------------------------
 
 backup_and_link() {
@@ -87,9 +96,12 @@ fi
 
 info "Ensuring Homebrew..."
 if ! command -v brew &>/dev/null; then
-  echo "  Installing Homebrew..."
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  eval "$(/opt/homebrew/bin/brew shellenv)"
+  if confirm "Homebrew not found. Install it?"; then
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  else
+    warn "Skipping Homebrew — brew-dependent steps will be skipped."
+  fi
 else
   echo "  Homebrew found at $(command -v brew)"
 fi
@@ -97,19 +109,40 @@ fi
 # --- Step 3: Brew bundle ----------------------------------------------------
 
 info "Installing packages from Brewfile..."
-if [[ "$SKIP_GHOSTTY" == true ]]; then
-  # Filter out ghostty from Brewfile for this run
-  grep -v 'cask "ghostty"' "$REPO_DIR/Brewfile" | brew bundle install --file=- || true
+if command -v brew &>/dev/null; then
+  if [[ "$SKIP_GHOSTTY" == true ]]; then
+    # Filter out ghostty from Brewfile for this run
+    grep -v 'cask "ghostty"' "$REPO_DIR/Brewfile" | brew bundle install --file=- || true
+  else
+    brew bundle install --file="$REPO_DIR/Brewfile" || true
+  fi
 else
-  brew bundle install --file="$REPO_DIR/Brewfile" || true
+  warn "Skipping Brewfile — Homebrew not installed."
 fi
 
 # --- Step 4: Starship --------------------------------------------------------
 
 info "Installing/updating starship..."
-"$REPO_DIR/scripts/install-starship.sh"
+if command -v starship &>/dev/null; then
+  "$REPO_DIR/scripts/install-starship.sh"
+elif confirm "Install starship prompt?"; then
+  "$REPO_DIR/scripts/install-starship.sh"
+else
+  echo "  Skipped starship."
+fi
 
-# --- Step 5: Symlinks --------------------------------------------------------
+# --- Step 5: Claude Code -----------------------------------------------------
+
+info "Ensuring Claude Code (standalone native build)..."
+if [[ -x "$HOME/.local/bin/claude" ]]; then
+  echo "  Claude Code found: $("$HOME/.local/bin/claude" --version 2>/dev/null || echo 'present')"
+elif confirm "Install standalone Claude Code?"; then
+  curl -fsSL https://claude.ai/install.sh | bash
+else
+  echo "  Skipped Claude Code."
+fi
+
+# --- Step 6: Symlinks --------------------------------------------------------
 
 info "Linking dotfiles..."
 
@@ -129,10 +162,9 @@ backup_and_link "$REPO_DIR/home/.config/git/ignore"    "$HOME/.config/git/ignore
 
 # bin/ scripts (individual files, not the whole dir)
 mkdir -p "$HOME/bin"
-backup_and_link "$REPO_DIR/bin/claudew"            "$HOME/bin/claudew"
 backup_and_link "$REPO_DIR/bin/aws-keys-rotate.sh" "$HOME/bin/aws-keys-rotate.sh"
 
-# --- Step 6: Orphan cleanup --------------------------------------------------
+# --- Step 7: Orphan cleanup --------------------------------------------------
 
 info "Cleaning up known orphans..."
 remove_orphan "$HOME/.zshrc"
@@ -140,8 +172,9 @@ remove_orphan "$HOME/.zprofile"
 remove_orphan "$HOME/.bashrc"
 remove_orphan "$HOME/.bash_profile"
 remove_orphan "$HOME/.config/alacritty/alacritty.toml"
+remove_orphan "$HOME/bin/claudew"
 
-# --- Step 7: Antidote plugins ------------------------------------------------
+# --- Step 8: Antidote plugins ------------------------------------------------
 
 info "Compiling antidote plugins..."
 ANTIDOTE_ZSH="/opt/homebrew/opt/antidote/share/antidote/antidote.zsh"
@@ -153,7 +186,7 @@ else
   warn "antidote not found — plugins will be compiled on first shell launch."
 fi
 
-# --- Step 8: Generate cleanup script -----------------------------------------
+# --- Step 9: Generate cleanup script -----------------------------------------
 
 if [[ "$BACKED_UP" == true ]]; then
   cat > "$BACKUP_DIR/cleanup.sh" << 'CLEANUP_EOF'
