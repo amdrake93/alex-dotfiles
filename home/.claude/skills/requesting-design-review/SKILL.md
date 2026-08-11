@@ -51,7 +51,9 @@ surfacing (below) is an audit trail, the loop does not wait for the owner to rea
 1. **Spawn** — dispatch the reviewer as a **fresh isolated subagent** — never a
    context-inheriting fork. It sees only: a fixed minimal trigger prompt, the repo(s)
    (CLAUDE.md included), and the diff(s). Its own git worktree when available; spawned on
-   the **most capable available model**. The trigger instructs it to **load this skill's
+   the **most capable available model — explicitly select it; never inherit the model you happen
+   to be running on** (usually *not* the most capable — resolve which model currently is, rather
+   than assuming your own tier is top). The trigger instructs it to **load this skill's
    references and operate strictly by them** — passed as **concrete absolute paths you
    resolve for the current machine** (a fresh subagent can't expand `~`/`$HOME` or resolve
    relative paths itself, per `DISCOVERY-FINDING`). Compute them from **this skill's own
@@ -127,6 +129,7 @@ likewise always presents a branch as **ready-for-review, never ready-to-merge.**
 ### Red flags — STOP and start over
 
 - About to **fork** the reviewer, or **review it yourself** "because it's small / urgent."
+- About to let the reviewer **inherit your session's model** instead of explicitly selecting the most capable one.
 - About to write a **chatty trigger** that summarizes the artifact or explains your decisions.
 - About to say **"ready to merge" / "good to ship" / "not good to merge" / "clean merge" /
   "hold the release"** — in *either* direction.
@@ -163,7 +166,7 @@ two can live in different repos, "relevant project" is explicit per row:
 |---|---|
 | **Artifact path** | Invocation only — no default; genuinely varies per project. |
 | **Decision-record location** (no-change decisions / plan-watch items) | The **artifact's project** (the repo/dir that owns the spec/plan and its process records). |
-| **Reviewer model tier** | Review-environment choice, not a repo property: defaults to the most capable available model, overridable at invocation. |
+| **Reviewer model tier** | Review-environment choice, not a repo property: defaults to the most capable available model — **explicitly selected, never inherited from the dispatcher's session** — overridable at invocation. |
 | **Audit dir** | Fixed default: session scratch outside all git trees. Not repo-sourced. |
 
 The **verification-target repos' `CLAUDE.md` files** are read by the *reviewer* as
