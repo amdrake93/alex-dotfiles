@@ -85,7 +85,8 @@ surfacing (below) is an audit trail, the loop does not wait for the owner to rea
    narrative — that is the contamination the fixed trigger exists to exclude. If the agent is
    lost, fall back to a fresh reviewer + the prior block.
 5. **Terminate** — on a round with **nothing left to fix** (approved + no findings, or a
-   closure on re-review). Minor-only findings keep the loop going until closed. The writer
+   closure on re-review). Minor- or nit-only findings keep the loop going until closed — **no
+   finding is "take it or leave it"; each is resolved or pushed back before the loop closes.** The writer
    then **carries the branch to the owner's merge gate** — presented ready-for-review, never
    ready-to-merge.
 
@@ -134,6 +135,7 @@ likewise always presents a branch as **ready-for-review, never ready-to-merge.**
 - About to say **"ready to merge" / "good to ship" / "not good to merge" / "clean merge" /
   "hold the release"** — in *either* direction.
 - About to skip the **re-review** and call it closed after one pass.
+- About to **close with a nit / "take it or leave it" finding left unaddressed** — those are no longer optional; resolve or push back on each.
 
 ## Break conditions to the owner (never automated past)
 

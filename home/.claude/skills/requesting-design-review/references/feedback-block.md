@@ -41,8 +41,16 @@ not verify, or that is false, does **not** go here — it becomes a finding.
 Numbered, each tagged with a severity:
 
 - **Important** — a defect: wrong behavior, a false claim about existing code, or a
-  load-bearing ambiguity that must close before the artifact drives code.
-- **Minor** — a real issue that does not block (verdict stays `approved` if only these exist).
+  load-bearing ambiguity that must close before the artifact drives code. Sets the verdict to
+  `request changes`.
+- **Minor** — a real issue that does not block the verdict (verdict stays `approved` if only
+  Minor/Nit findings exist).
+- **Nit** — cosmetic or polish (wording, naming, formatting). Lowest priority.
+
+**No finding is optional.** Severity sets *priority and whether the verdict blocks* — never
+whether the writer may skip it. Every finding, Nit included, is either resolved or pushed back
+against with `file:line`; a re-review counts any left silently unaddressed. There is **no
+"take it or leave it" tier**.
 
 **Each finding names the defect, not the remedy.** State what is wrong and cite the
 `file:line` evidence; do **not** author the fix. *Why:* how to resolve it is the writer's
@@ -58,11 +66,6 @@ Two kinds of finding are routed, not filed as change requests:
   it breaks the loop to the owner rather than demanding a change.
 - **Plan-watch item** — a spec-review concern that belongs to the *plan*, not this artifact.
   Flag it as such so the plan review can verify it landed.
-
-### 6. Optional take-or-leave nits
-
-An explicitly-labeled tail of nits that are the writer's call. A re-review does **not** count
-these as unaddressed.
 
 ---
 
@@ -89,10 +92,9 @@ these as unaddressed.
 >    picks monotonic vs. wall-clock.)
 > 2. **Minor** — The spec's example uses `ttl=0` but doesn't say whether that means "never
 >    cache" or "never expire". Worth disambiguating; not blocking.
+> 3. **Nit** — "TTL" is expanded on first use in §2 but not in the title. Cosmetic — low
+>    priority, but still resolve or push back; not optional.
 >
 > ## Decision routing
 > - **Question for the owner:** should a `get()` on an expired entry return `None` or trigger
 >   a refetch? The spec assumes `None`; that's a product call, not a defect.
->
-> ## Nits (take or leave)
-> - "TTL" is expanded on first use in §2 but not in the title. Cosmetic.
