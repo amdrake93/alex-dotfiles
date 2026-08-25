@@ -1,10 +1,10 @@
 ---
-name: requesting-design-review
+name: requesting-design-review-auto
 description: 'Use when a spec or plan needs an independent review before it drives code, or before treating a design artifact as settled — the design-time counterpart to requesting-code-review. Also use for a small fix-flow change (spec delta + code, no plan). Symptoms: about to build from an unreviewed spec, about to call a plan done, "just review it myself."'
 disable-model-invocation: true
 ---
 
-# requesting-design-review
+# requesting-design-review-auto
 
 ## Overview
 
@@ -58,11 +58,11 @@ surfacing (below) is an audit trail, the loop does not wait for the owner to rea
    references and operate strictly by them** — passed as **concrete absolute paths you
    resolve for the current machine** (a fresh subagent can't expand `~`/`$HOME` or resolve
    relative paths itself, per `DISCOVERY-FINDING`). Compute them from **this skill's own
-   install directory** — on Claude Code, `$HOME/.claude/skills/requesting-design-review/references/`
+   install directory** — on Claude Code, `$HOME/.claude/skills/requesting-design-review-auto/references/`
    — expanding `$HOME` to a real path when you write the trigger. Do **not** hardcode any one
    box's home. The two files to name:
-   - `<resolved-home>/.claude/skills/requesting-design-review/references/review-types.md`
-   - `<resolved-home>/.claude/skills/requesting-design-review/references/feedback-block.md`
+   - `<resolved-home>/.claude/skills/requesting-design-review-auto/references/review-types.md`
+   - `<resolved-home>/.claude/skills/requesting-design-review-auto/references/feedback-block.md`
 2. **Review** — the reviewer re-derives everything from the code ground truth (never the
    writer's narrative), writes its feedback block to a **round-numbered audit file**, and
    returns it verbatim. Two safety rules on that file (the audit dir is shared scratch that

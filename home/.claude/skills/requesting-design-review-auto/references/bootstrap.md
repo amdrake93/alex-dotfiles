@@ -32,10 +32,10 @@ artifact, no explanation of decisions. The trigger contains exactly:
 - **Verification target(s)** — the code location(s) to check claims against, each with its
   `git diff` / range where it has a branch under review.
 - **Load and operate strictly by these** — as concrete absolute paths resolved for the
-  current machine from this skill's install dir (on Claude Code, `$HOME/.claude/skills/requesting-design-review/references/`;
+  current machine from this skill's install dir (on Claude Code, `$HOME/.claude/skills/requesting-design-review-auto/references/`;
   expand `$HOME`, don't hardcode a box):
-  - `<resolved-home>/.claude/skills/requesting-design-review/references/review-types.md`
-  - `<resolved-home>/.claude/skills/requesting-design-review/references/feedback-block.md`
+  - `<resolved-home>/.claude/skills/requesting-design-review-auto/references/review-types.md`
+  - `<resolved-home>/.claude/skills/requesting-design-review-auto/references/feedback-block.md`
 - **Audit dir** — session scratch outside all git trees, named `<artifact-slug>-<review-type>/`;
   write the **lowest `round-N.md` that does not yet exist** (append-only), then return the block
   verbatim.
