@@ -44,11 +44,9 @@ in `references/feedback-block.md`; the manual two-session fallback in `reference
 
 ## The review loop
 
-Invoking this skill authorizes the **review** to run — spawning the reviewer and producing the
-feedback is autonomous. **Implementation is not.** The loop **pauses at an owner-approval gate
-after every round**: the writer changes nothing in the artifact or code until the owner has seen
-the processed feedback and approved specific items. Surfacing (below) is where that gate lives —
-the loop **waits there** for the owner.
+Invoking this skill on an artifact is the owner's **"go" for the whole loop** — one
+authorized turn that runs to closure or a break condition. It is **not** a pause gate:
+surfacing (below) is an audit trail, the loop does not wait for the owner to read each round.
 
 1. **Spawn** — dispatch the reviewer as a **fresh isolated subagent** — never a
    context-inheriting fork. It sees only: a fixed minimal trigger prompt, the repo(s)
@@ -77,16 +75,12 @@ the loop **waits there** for the owner.
 
    The dir lives **outside all git trees** (session scratch — never repo-relative, so blocks
    can't be swept into a commit).
-3. **Process — then STOP at the owner-approval gate.** The writer **surfaces the block
-   verbatim**, then processes it with **REQUIRED SUB-SKILL: `superpowers:receiving-code-review`**:
-   verify each claim against the code and push back with `file:line` where it doesn't hold. The
-   product of this step is a **recommended disposition per finding** (fix / push back / route to
-   owner / no-change) — **not an edit.** **Change nothing in the artifact or code yet.** Surface
-   the processed feedback and your recommendations to the owner and **wait for explicit
-   approval.** Then implement **only** the approved items — committing each named — and record
-   plan-watch items / "no-change" decisions where the project keeps them.
-4. **Re-review** — after the **owner-approved** fixes are committed, continue the **same**
-   reviewer agent with only a constrained message
+3. **Process** — the writer **surfaces the block verbatim** in the conversation (the audit
+   trail), then processes it with **REQUIRED SUB-SKILL: `superpowers:receiving-code-review`**:
+   verify each claim against the code, push back with `file:line` where it doesn't hold,
+   commit fixes each named, and record plan-watch items / "no-change" decisions where the
+   project keeps them.
+4. **Re-review** — continue the **same** reviewer agent with only a constrained message
    (`"rereview — fixes committed, range <old>..<new>"` + contract-sanctioned pushback). No
    narrative — that is the contamination the fixed trigger exists to exclude. If the agent is
    lost, fall back to a fresh reviewer + the prior block.
@@ -123,13 +117,6 @@ violations — a *negative* merge pronouncement crosses the line exactly as a po
 does. The verdict names the **artifact's** state, never the branch's shippability. The writer
 likewise always presents a branch as **ready-for-review, never ready-to-merge.**
 
-**Owner-approval gate — implementation is not autonomous.** The reviewer runs autonomously; the
-writer's **changes do not.** After each round the writer surfaces the processed feedback and a
-recommended disposition per finding, then **stops for the owner's explicit approval** — it edits
-and commits **nothing** in the artifact or code until then, and implements **only** what the
-owner approves. "Autonomously fixing" a finding — however obviously correct, however small — is
-the violation. Independence of the *review* never grants autonomy over the *artifact*.
-
 ### Rationalizations — STOP, you're crossing a boundary
 
 | Excuse | Reality |
@@ -139,8 +126,6 @@ the violation. Independence of the *review* never grants autonomy over the *arti
 | "Low on time/tokens, so cut the fresh reviewer." | Trade the reviewer's *model tier* or use the manual fallback — never the independence boundary. Fewer tokens on an invalid review is not a saving. |
 | "They just need to know if it's shippable — the release is waiting." | Merge-readiness is the owner's call. Say `approved` / `request changes`, nothing about shipping. |
 | "I'll just say 'not good to merge' — a rejection is safe." | Any merge/ship/release verdict crosses the boundary, negative included. The verdict names the artifact, not the branch. |
-| "The findings are obviously correct — applying them is just efficient." | Correctness isn't the gate; the owner's approval is. Surface your recommendation and wait. Autonomy over the artifact was never yours to take. |
-| "It's a one-line fix / just a nit — I'll apply it and mention it after." | Size doesn't bypass the gate. No edit or commit without approval — surface it, recommend a disposition, wait. |
 
 ### Red flags — STOP and start over
 
@@ -149,8 +134,6 @@ the violation. Independence of the *review* never grants autonomy over the *arti
 - About to write a **chatty trigger** that summarizes the artifact or explains your decisions.
 - About to say **"ready to merge" / "good to ship" / "not good to merge" / "clean merge" /
   "hold the release"** — in *either* direction.
-- About to **edit or commit a fix straight from the reviewer's findings — without the owner's explicit approval.**
-- About to **"run the loop to closure"** without pausing at the owner-approval gate between rounds.
 - About to skip the **re-review** and call it closed after one pass.
 - About to **close with a nit / "take it or leave it" finding left unaddressed** — those are no longer optional; resolve or push back on each.
 
