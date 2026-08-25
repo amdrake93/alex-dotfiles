@@ -53,10 +53,18 @@ surfacing (below) is an audit trail, the loop does not wait for the owner to rea
    context-inheriting fork. It sees only: a fixed minimal trigger prompt, the repo(s)
    (CLAUDE.md included), and the diff(s). Its own git worktree when available; spawned on
    the **most capable available model — explicitly select it; never inherit the model you happen
-   to be running on** (the one you are running is usually *not* the most capable). **As of 2026-08
-   the most capable is Claude Fable 5 (`claude-fable-5`) — above the Opus tier, so do **not**
-   assume Opus 4.8 (or whatever you are running) is top.** Re-derive the current top model when in
-   doubt (this changes over time); if no Fable-tier model is available, use the top available Opus. The trigger instructs it to **load this skill's
+   to be running on** (your knowledge of the model lineup is frozen at your training cutoff, so you
+   are a poor judge of what is newest — the one you are running is usually *not* the most capable).
+   **Determine it by loading the `claude-api` skill and reading its model catalog: pick the model it
+   designates as Anthropic's _most capable_ — NOT the model it recommends as a default/cost
+   choice.** Select that model and treat it as available. Its price, pricing tier, data-retention
+   requirements, or the catalog calling it "not the default upgrade path" are **not** availability
+   signals — do **not** downgrade to a lesser model (least of all your own) on a *guess* that the
+   top one might be gated. Fall back only on **concrete** grounds: an explicit invocation arg /
+   `CLAUDE.md` override, or an actual provisioning error when you try to spawn it — never on
+   speculation. If `claude-api` itself is unavailable, resolve from an invocation arg or the
+   project's `CLAUDE.md`; if neither is given, say you cannot confirm the top model rather than
+   defaulting to your own. The trigger instructs it to **load this skill's
    references and operate strictly by them** — passed as **concrete absolute paths you
    resolve for the current machine** (a fresh subagent can't expand `~`/`$HOME` or resolve
    relative paths itself, per `DISCOVERY-FINDING`). Compute them from **this skill's own
@@ -171,7 +179,7 @@ two can live in different repos, "relevant project" is explicit per row:
 |---|---|
 | **Artifact path** | Invocation only — no default; genuinely varies per project. |
 | **Decision-record location** (no-change decisions / plan-watch items) | The **artifact's project** (the repo/dir that owns the spec/plan and its process records). |
-| **Reviewer model tier** | Review-environment choice, not a repo property: defaults to the most capable available model — **explicitly selected, never inherited from the dispatcher's session** (as of 2026-08 that is **Claude Fable 5 / `claude-fable-5`, above the Opus tier — not Opus 4.8**; re-derive over time) — overridable at invocation. |
+| **Reviewer model tier** | Review-environment choice, not a repo property: the **most capable available model — explicitly selected, never inherited from the dispatcher's session or your own model.** Resolve it by reading the `claude-api` skill's model catalog (its *most-capable* designation, **not** its default recommendation); overridable at invocation. |
 | **Audit dir** | Fixed default: session scratch outside all git trees. Not repo-sourced. |
 
 The **verification-target repos' `CLAUDE.md` files** are read by the *reviewer* as
