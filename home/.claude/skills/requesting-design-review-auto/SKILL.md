@@ -53,8 +53,10 @@ surfacing (below) is an audit trail, the loop does not wait for the owner to rea
    context-inheriting fork. It sees only: a fixed minimal trigger prompt, the repo(s)
    (CLAUDE.md included), and the diff(s). Its own git worktree when available; spawned on
    the **most capable available model — explicitly select it; never inherit the model you happen
-   to be running on** (usually *not* the most capable — resolve which model currently is, rather
-   than assuming your own tier is top). The trigger instructs it to **load this skill's
+   to be running on** (the one you are running is usually *not* the most capable). **As of 2026-08
+   the most capable is Claude Fable 5 (`claude-fable-5`) — above the Opus tier, so do **not**
+   assume Opus 4.8 (or whatever you are running) is top.** Re-derive the current top model when in
+   doubt (this changes over time); if no Fable-tier model is available, use the top available Opus. The trigger instructs it to **load this skill's
    references and operate strictly by them** — passed as **concrete absolute paths you
    resolve for the current machine** (a fresh subagent can't expand `~`/`$HOME` or resolve
    relative paths itself, per `DISCOVERY-FINDING`). Compute them from **this skill's own
@@ -169,7 +171,7 @@ two can live in different repos, "relevant project" is explicit per row:
 |---|---|
 | **Artifact path** | Invocation only — no default; genuinely varies per project. |
 | **Decision-record location** (no-change decisions / plan-watch items) | The **artifact's project** (the repo/dir that owns the spec/plan and its process records). |
-| **Reviewer model tier** | Review-environment choice, not a repo property: defaults to the most capable available model — **explicitly selected, never inherited from the dispatcher's session** — overridable at invocation. |
+| **Reviewer model tier** | Review-environment choice, not a repo property: defaults to the most capable available model — **explicitly selected, never inherited from the dispatcher's session** (as of 2026-08 that is **Claude Fable 5 / `claude-fable-5`, above the Opus tier — not Opus 4.8**; re-derive over time) — overridable at invocation. |
 | **Audit dir** | Fixed default: session scratch outside all git trees. Not repo-sourced. |
 
 The **verification-target repos' `CLAUDE.md` files** are read by the *reviewer* as
