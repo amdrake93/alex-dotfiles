@@ -1,6 +1,7 @@
 ---
 name: requesting-design-review
 description: 'Use when a spec or plan needs an independent review before it drives code, or before treating a design artifact as settled — the design-time counterpart to requesting-code-review. Also use for a small fix-flow change (spec delta + code, no plan). Symptoms: about to build from an unreviewed spec, about to call a plan done, "just review it myself."'
+disable-model-invocation: true
 ---
 
 # requesting-design-review
